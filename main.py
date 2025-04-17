@@ -1,12 +1,39 @@
-meme_dict = {
-            "CRINGE": "Sesuatu yang sangat aneh atau memalukan",
-            "LOL": "Tanggapan umum terhadap sesuatu yang lucu",
-            }
-word = input("Ketik kata yang tidak Kamu mengerti (gunakan huruf kapital semua!): ")
+import discord
+from discord.ext import commands
+import random
 
-if word in meme_dict.keys():
-    # Apa yang harus kita lakukan jika kata itu ditemukan?
-    print(meme_dict[word])
-else:
-    # Apa yang harus kita lakukan jika kata itu tidak ditemukan?
-    print("kata tersebut belum tersedia di kamus!")
+intents = discord.Intents.default()
+intents.message_content = True
+
+bot = commands.Bot(command_prefix='!', intents=intents)
+
+@bot.event
+async def on_ready():
+    print(f'We have logged in as {bot.user}')
+
+@bot.command()
+async def hello(ctx):
+    await ctx.send(f'Hi! I am a bot {bot.user}!')
+
+@bot.command()
+async def heh(ctx, count_heh = 5):
+    await ctx.send("he" * count_heh)
+
+@bot.command()
+async def roll(ctx, dice: str):
+    """Rolls a dice in NdN format."""
+    try:
+        rolls, limit = map(int, dice.split('d'))
+    except Exception:
+        await ctx.send('Format has to be in NdN!')
+        return
+
+    result = ', '.join(str(random.randint(1, limit)) for r in range(rolls))
+    await ctx.send(result)
+
+@bot.command()
+async def add(ctx, left: int, right: int):
+    """Adds two numbers together."""
+    await ctx.send(left + right)
+
+bot.run("TOKEN")
